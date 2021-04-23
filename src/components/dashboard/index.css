@@ -69,3 +69,29 @@
 	color: white;
 	text-decoration: none;
 }
+.p-panel {
+	height: 90px;
+	width: 30%;
+	border-radius: 20px;
+}
+.p-panel-maroon {
+	background: linear-gradient(
+		16deg,
+		rgba(234, 81, 121, 1) 0%,
+		rgba(172, 54, 115, 1) 100%
+	);
+}
+.p-panel-indigo {
+	background: linear-gradient(
+		16deg,
+		rgba(195, 84, 215, 1) 0%,
+		rgba(136, 74, 206, 1) 100%
+	);
+}
+.p-panel-orange {
+	background: linear-gradient(
+		16deg,
+		rgba(245, 90, 158, 1) 0%,
+		rgba(255, 155, 106, 1) 100%
+	);
+}
