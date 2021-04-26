@@ -84,7 +84,7 @@ export default function Main() {
 	return (
 		<div>
 			<Container maxwidth="sm">
-				<div style={{ display: "flex", justifyContent: "space-evenly" }}>
+				<div style={{ display: "flex", justifyContent: "space-between" }}>
 					<div className="p-panel p-panel-maroon">
 						<h5>{dashboardData.count}</h5>
 					</div>
