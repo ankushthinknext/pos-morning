@@ -5,6 +5,7 @@ import Navbar from "./Navbar";
 import Main from "./Main";
 import { useLocation } from "react-router";
 import Users from "../users/Users";
+import User from "../users/User";
 
 export default function Dashboard() {
 	return (
@@ -14,6 +15,7 @@ export default function Dashboard() {
 				<Navbar />
 				{useLocation().pathname === "/dashboard" && <Main />}
 				{useLocation().pathname === "/users" && <Users />}
+				{useLocation().pathname === "/user" && <User />}
 			</div>
 		</div>
 	);
