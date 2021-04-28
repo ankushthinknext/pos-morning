@@ -15,7 +15,7 @@ export default function Dashboard() {
 				<Navbar />
 				{useLocation().pathname === "/dashboard" && <Main />}
 				{useLocation().pathname === "/users" && <Users />}
-				{useLocation().pathname === "/user" && <User />}
+				{useLocation().pathname.startsWith("/user/") && <User />}
 			</div>
 		</div>
 	);

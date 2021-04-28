@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -16,6 +16,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import { Paper } from "@material-ui/core";
+import { useParams } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
 	paper: {
@@ -45,9 +46,27 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function User() {
+	const userId = useParams().id;
 	const URL = process.env.REACT_APP_API_BASE_URL;
 	const classes = useStyles();
 	const [formData, setFormData] = useState({});
+	const [method, setMethod] = useState("POST");
+
+	useEffect(() => {
+		async function getUser(id) {
+			if (id) {
+				try {
+					let response = await fetch(`${URL}user/${id}`);
+					let { data } = await response.json();
+					setFormData(data);
+					setMethod("PUT");
+				} catch (error) {
+					console.log(error);
+				}
+			}
+		}
+		getUser(userId);
+	}, [userId]);
 
 	const handleFormChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -55,8 +74,8 @@ export default function User() {
 
 	const handleFormSubmit = async (e) => {
 		e.preventDefault();
-		let response = await fetch(`${URL}user`, {
-			method: "POST",
+		let response = await fetch(`${URL}user/${userId ? userId : ""}`, {
+			method: method,
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -90,6 +109,7 @@ export default function User() {
 									id="firstName"
 									label="Full Name"
 									autoFocus
+									value={formData.fullname}
 								/>
 							</Grid>
 							<Grid item xs={12} sm={6}>
@@ -102,6 +122,7 @@ export default function User() {
 									label="Username"
 									name="username"
 									autoComplete="lname"
+									value={formData.username}
 								/>
 							</Grid>
 							<Grid item xs={12} sm={6}>
@@ -115,6 +136,7 @@ export default function User() {
 									id="firstName"
 									label="Email"
 									autoFocus
+									value={formData.email}
 								/>
 							</Grid>
 							<Grid item xs={12} sm={6}>
@@ -128,6 +150,7 @@ export default function User() {
 										label="Password"
 										type="password"
 										id="password"
+										value={formData.password}
 										autoComplete="current-password"
 									/>
 								</FormControl>
@@ -145,8 +168,16 @@ export default function User() {
 											id: "age-native-simple",
 										}}>
 										<option aria-label="None" value="" />
-										<option value="Cashier">Cashier</option>
-										<option value="Admin">Admin</option>
+										<option
+											value="Cashier"
+											selected={formData.role === "Cashier" ? true : false}>
+											Cashier
+										</option>
+										<option
+											value="Admin"
+											selected={formData.role === "Admin" ? true : false}>
+											Admin
+										</option>
 									</Select>
 								</FormControl>
 							</Grid>

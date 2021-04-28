@@ -14,6 +14,8 @@ import Chip from "@material-ui/core/Chip";
 import moment from "moment";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { Link } from "react-router-dom";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -54,6 +56,19 @@ export default function Users() {
 		<div>
 			<Container>
 				<Grid>
+					<Grid container justify="flex-end" item xs={12}>
+						<Button
+							align="left"
+							size="sm"
+							type="submit"
+							variant="contained"
+							color="primary"
+							className="c-button "
+							component={Link}
+							to="user/">
+							New User
+						</Button>
+					</Grid>
 					<Grid item={12}>
 						<Paper className={classes.paper}>
 							<TableContainer className={classes.container}>
@@ -71,7 +86,7 @@ export default function Users() {
 									</TableHead>
 									<TableBody>
 										{users.map((user) => (
-											<TableRow key={user.fullname}>
+											<TableRow key={user._id}>
 												<TableCell>{user.fullname}</TableCell>
 												<TableCell>{user.username}</TableCell>
 												<TableCell align="right">
@@ -87,7 +102,10 @@ export default function Users() {
 													{moment(user.lastActive).format("lll")}
 												</TableCell>
 												<TableCell align="right">
-													<EditIcon />
+													<Link to={`user/${user._id}`}>
+														<EditIcon />
+													</Link>
+
 													<DeleteIcon />
 												</TableCell>
 											</TableRow>
