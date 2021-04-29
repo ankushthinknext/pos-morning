@@ -16,6 +16,13 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
+import NativeSelect from "@material-ui/core/NativeSelect";
+import TextField from "@material-ui/core/TextField";
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import SearchIcon from "@material-ui/icons/Search";
+import Input from "@material-ui/core/Input";
+import FormControl from "@material-ui/core/FormControl";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -26,18 +33,23 @@ const useStyles = makeStyles((theme) => ({
 		textAlign: "center",
 		color: theme.palette.text.secondary,
 	},
+	firstRow: {
+		marginTop: "20px",
+		marginBottom: "20px",
+	},
 }));
 
 export default function Users() {
 	const classes = useStyles();
 	const URL = process.env.REACT_APP_API_BASE_URL;
 	const [users, setUsers] = useState([]);
+	let [query, setQuery] = useState({
+		sort: "Newest",
+		role: "all",
+		limit: 20,
+	});
+
 	useEffect(() => {
-		let query = {
-			sort: "Newest",
-			role: "all",
-			limit: 20,
-		};
 		query = queryString.stringify(query);
 		async function getAllUsers() {
 			try {
@@ -50,13 +62,18 @@ export default function Users() {
 		}
 		getAllUsers();
 		console.log(users);
-	}, []);
+	}, [query]);
 	console.log(users);
 	return (
 		<div>
 			<Container>
 				<Grid>
-					<Grid container justify="flex-end" item xs={12}>
+					<Grid
+						className={classes.firstRow}
+						container
+						justify="flex-end"
+						item
+						xs={12}>
 						<Button
 							align="left"
 							size="sm"
@@ -68,6 +85,49 @@ export default function Users() {
 							to="user/">
 							New User
 						</Button>
+					</Grid>
+					<Grid
+						container
+						className={classes.firstRow}
+						justify="flex-end"
+						item
+						xs={12}>
+						<FormControl>
+							<Input
+								id="standard-adornment-weight"
+								endAdornment={
+									<InputAdornment position="end">
+										<SearchIcon />
+									</InputAdornment>
+								}
+								aria-describedby="standard-weight-helper-text"
+								inputProps={{
+									"aria-label": "weight",
+								}}
+							/>
+						</FormControl>
+
+						<NativeSelect
+							inputProps={{
+								name: "age",
+								id: "age-native-label-placeholder",
+							}}>
+							<option value="">None</option>
+							<option value={10}>Ten</option>
+							<option value={20}>Twenty</option>
+							<option value={30}>Thirty</option>
+						</NativeSelect>
+						<NativeSelect
+							inputProps={{
+								name: "age",
+								id: "age-native-label-placeholder",
+							}}
+							className="c-rounded">
+							<option value="">None</option>
+							<option value={10}>Ten</option>
+							<option value={20}>Twenty</option>
+							<option value={30}>Thirty</option>
+						</NativeSelect>
 					</Grid>
 					<Grid item={12}>
 						<Paper className={classes.paper}>

@@ -16,7 +16,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import { Paper } from "@material-ui/core";
-import { useParams } from "react-router";
+import { useHistory, useLocation, useParams } from "react-router";
 
 const useStyles = makeStyles((theme) => ({
 	paper: {
@@ -45,7 +45,9 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function User() {
+export default function User(props) {
+	const history = useHistory();
+	const { notification } = props;
 	const userId = useParams().id;
 	const URL = process.env.REACT_APP_API_BASE_URL;
 	const classes = useStyles();
@@ -74,15 +76,38 @@ export default function User() {
 
 	const handleFormSubmit = async (e) => {
 		e.preventDefault();
-		let response = await fetch(`${URL}user/${userId ? userId : ""}`, {
-			method: method,
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(formData),
-		});
-		let result = response.json();
-		console.log(result);
+		try {
+			let response = await fetch(`${URL}user/${userId ? userId : ""}`, {
+				method: method,
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(formData),
+			});
+			let result = await response.json();
+			if (!result) console.log(result);
+			if (result.status === "success") {
+				notification({
+					open: true,
+					status: "success",
+					message: "Transaction successfull!",
+				});
+
+				history.push("/users");
+			} else {
+				notification({
+					open: true,
+					status: "error",
+					message: "Transaction unsuccessfull!",
+				});
+			}
+		} catch (error) {
+			notification({
+				open: true,
+				status: "error",
+				message: "Something went wrong!",
+			});
+		}
 	};
 
 	return (
