@@ -8,11 +8,16 @@ function Sidebar() {
 	console.log(location);
 
 	const sidebarLinks = [
-		{ label: "Dashboard", path: "/dashboard", icon: <HomeIcon /> },
+		{
+			label: "Dashboard",
+			path: "/dashboard",
+			subpaths: ["user/"],
+			icon: <HomeIcon />,
+		},
 		{ label: "Users", path: "/users", icon: <PeopleAltIcon /> },
 		{ label: "Category", path: "/category", icon: <PeopleAltIcon /> },
 		{ label: "Products", path: "/products", icon: <PeopleAltIcon /> },
-		{ label: "Transactions", path: "/trsansactions", icon: <PeopleAltIcon /> },
+		{ label: "Transactions", path: "/transactions", icon: <PeopleAltIcon /> },
 	];
 	return (
 		<div className="sidebar">
@@ -20,7 +25,11 @@ function Sidebar() {
 				<Link to={link.path}>
 					<div
 						className={
-							link.path === location.pathname
+							link.path === location.pathname ||
+							(link.subpaths &&
+								link.subpaths.find((link) =>
+									location.pathname.startsWith(link),
+								))
 								? "sidebar-link active"
 								: "sidebar-link"
 						}>

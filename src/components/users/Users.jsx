@@ -23,6 +23,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import Input from "@material-ui/core/Input";
 import FormControl from "@material-ui/core/FormControl";
+import Swal from "sweetalert2";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -43,11 +44,36 @@ export default function Users() {
 	const classes = useStyles();
 	const URL = process.env.REACT_APP_API_BASE_URL;
 	const [users, setUsers] = useState([]);
+	let [del, setDel] = useState(false);
 	let [query, setQuery] = useState({
 		sort: "Newest",
 		role: "all",
 		limit: 20,
+		keyword: "",
 	});
+
+	const handleDelete = async (id) => {
+		Swal.fire({
+			title: "Are you sure?",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonText: "Yes, delete it!",
+			cancelButtonText: "No, keep it",
+		}).then((result) => {
+			setDel(!del);
+			if (result.value) {
+				fetch(`${URL}user/${id}`, { method: "DELETE" });
+				Swal.fire("Deleted!", "User has been deleted!", "success");
+			}
+		});
+	};
+	console.log(query);
+
+	const handleQueryChange = (e) => {
+		let newQuery = { ...query };
+		newQuery[e.target.name] = e.target.value;
+		setQuery(newQuery);
+	};
 
 	useEffect(() => {
 		query = queryString.stringify(query);
@@ -62,8 +88,8 @@ export default function Users() {
 		}
 		getAllUsers();
 		console.log(users);
-	}, [query]);
-	console.log(users);
+	}, [query, del]);
+
 	return (
 		<div>
 			<Container>
@@ -86,49 +112,55 @@ export default function Users() {
 							New User
 						</Button>
 					</Grid>
-					<Grid
-						container
-						className={classes.firstRow}
-						justify="flex-end"
-						item
-						xs={12}>
-						<FormControl>
-							<Input
-								id="standard-adornment-weight"
-								endAdornment={
-									<InputAdornment position="end">
-										<SearchIcon />
-									</InputAdornment>
-								}
-								aria-describedby="standard-weight-helper-text"
-								inputProps={{
-									"aria-label": "weight",
-								}}
-							/>
-						</FormControl>
+					<form
+						onChange={handleQueryChange}
+						onSubmit={(e) => {
+							e.preventDefault();
+						}}>
+						<Grid
+							container
+							className={classes.firstRow}
+							justify="flex-end"
+							item
+							xs={12}>
+							<FormControl>
+								<Input
+									id="standard-adornment-weight"
+									endAdornment={
+										<InputAdornment position="end">
+											<SearchIcon />
+										</InputAdornment>
+									}
+									aria-describedby="standard-weight-helper-text"
+									inputProps={{
+										name: "keyword",
+										"aria-label": "weight",
+									}}
+								/>
+							</FormControl>
 
-						<NativeSelect
-							inputProps={{
-								name: "age",
-								id: "age-native-label-placeholder",
-							}}>
-							<option value="">None</option>
-							<option value={10}>Ten</option>
-							<option value={20}>Twenty</option>
-							<option value={30}>Thirty</option>
-						</NativeSelect>
-						<NativeSelect
-							inputProps={{
-								name: "age",
-								id: "age-native-label-placeholder",
-							}}
-							className="c-rounded">
-							<option value="">None</option>
-							<option value={10}>Ten</option>
-							<option value={20}>Twenty</option>
-							<option value={30}>Thirty</option>
-						</NativeSelect>
-					</Grid>
+							<NativeSelect
+								inputProps={{
+									name: "role",
+									id: "age-native-label-placeholder",
+								}}>
+								<option value="All">All Role</option>
+								<option value="Admin">Admin</option>
+								<option value="Cashier">Cashier</option>
+							</NativeSelect>
+							<NativeSelect
+								inputProps={{
+									name: "sort",
+									id: "age-native-label-placeholder",
+								}}
+								className="c-rounded">
+								<option value="Newest">Newest</option>
+								<option value="Oldest">Oldest</option>
+								<option value="Name">Name</option>
+								<option value="Last Active">Last Active</option>
+							</NativeSelect>
+						</Grid>
+					</form>
 					<Grid item={12}>
 						<Paper className={classes.paper}>
 							<TableContainer className={classes.container}>
@@ -166,7 +198,7 @@ export default function Users() {
 														<EditIcon />
 													</Link>
 
-													<DeleteIcon />
+													<DeleteIcon onClick={() => handleDelete(user._id)} />
 												</TableCell>
 											</TableRow>
 										))}
