@@ -12,6 +12,8 @@ function App() {
 				<ProtectedRoute path="/users" component={Dashboard} />
 				<ProtectedRoute path="/user/:id?" component={Dashboard} />
 				<ProtectedRoute path="/category" component={Dashboard} />
+				<ProtectedRoute path="/categories" component={Dashboard} />
+				<ProtectedRoute path="/category/:id?" component={Dashboard} />
 				<ProtectedRoute path="/products" component={Dashboard} />
 				<ProtectedRoute path="/transactions" component={Dashboard} />
 				<Route path="/login" component={Login} />

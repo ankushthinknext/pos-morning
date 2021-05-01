@@ -9,6 +9,8 @@ import User from "../users/User";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import Transactions from "../transactions/Transactions";
+import Categories from "../categories/Categories";
+import Category from "../categories/Category";
 
 export default function Dashboard() {
 	const [notification, setNotification] = useState({
@@ -45,11 +47,13 @@ export default function Dashboard() {
 			<div className="main-content">
 				<Navbar />
 				{useLocation().pathname === "/dashboard" && <Main />}
-				{useLocation().pathname === "/users" && <Users />}
 				{useLocation().pathname === "/transactions" && <Transactions />}
+				{useLocation().pathname === "/users" && <Users />}
 				{useLocation().pathname.startsWith("/user/") && (
 					<User notification={handleNotification} />
 				)}
+				{useLocation().pathname === "/categories" && <Categories />}
+				{useLocation().pathname === "/category" && <Category />}
 			</div>
 		</div>
 	);

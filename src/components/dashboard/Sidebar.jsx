@@ -15,7 +15,7 @@ function Sidebar() {
 			icon: <HomeIcon />,
 		},
 		{ label: "Users", path: "/users", icon: <PeopleAltIcon /> },
-		{ label: "Category", path: "/category", icon: <PeopleAltIcon /> },
+		{ label: "Category", path: "/categories", icon: <PeopleAltIcon /> },
 		{ label: "Products", path: "/products", icon: <PeopleAltIcon /> },
 		{ label: "Transactions", path: "/transactions", icon: <PeopleAltIcon /> },
 	];
