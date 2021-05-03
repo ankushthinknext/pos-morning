@@ -1,21 +1,27 @@
 import { Container } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
-
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState, useEffect } from "react";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
+import { makeStyles } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
+import PropTypes from "prop-types";
+import Box from "@material-ui/core/Box";
 
+const URL = process.env.REACT_APP_API_BASE_URL;
 const useStyles = makeStyles((theme) => ({
 	root: {
 		flexGrow: 1,
-		width: "100%",
-		backgroundColor: theme.palette.background.paper,
+	},
+	paper: {
+		padding: theme.spacing(2),
+		textAlign: "center",
+		color: theme.palette.text.secondary,
 	},
 }));
+
 function TabPanel(props) {
 	const { children, value, index, ...other } = props;
 
@@ -35,80 +41,75 @@ function TabPanel(props) {
 	);
 }
 
+TabPanel.propTypes = {
+	children: PropTypes.node,
+	index: PropTypes.any.isRequired,
+	value: PropTypes.any.isRequired,
+};
+
 function a11yProps(index) {
 	return {
 		id: `scrollable-auto-tab-${index}`,
 		"aria-controls": `scrollable-auto-tabpanel-${index}`,
 	};
 }
+
 export default function Transactions() {
 	const classes = useStyles();
 	const [value, setValue] = React.useState(0);
+	const [categories, setCategories] = useState([]);
+	console.log(categories);
+
 	const handleChange = (event, newValue) => {
 		setValue(newValue);
 	};
-	const URL = process.env.REACT_APP_API_BASE_URL;
-	let [categories, setCategories] = useState();
-	useEffect(() => {
-		async function getAllProducts() {
-			let res = await fetch(`${URL}product/transaction`);
-			res = await res.json();
-			setCategories(res.data.categories);
-		}
-		getAllProducts();
-	});
-	console.log(categories);
 
+	useEffect(() => {
+		async function getAllCategories() {
+			let response = await fetch(`${URL}product/transaction`);
+			response = await response.json();
+			setCategories(response.data.categories);
+		}
+		getAllCategories();
+	}, []);
 	return (
-		<Container>
-			<Grid alignItems="stretch" container spacing={2}>
-				<Grid item xs={8}>
-					<Paper className={classes.paper}>
-						<Tabs
-							onChange={handleChange}
-							value={value}
-							indicatorColor="primary"
-							textColor="primary"
-							variant="scrollable"
-							scrollButtons="auto"
-							aria-label="scrollable auto tabs example">
-							<Tab label="Item One" {...a11yProps(0)} />
-							<Tab label="Item Two" {...a11yProps(1)} />
-							<Tab label="Item Three" {...a11yProps(2)} />
-							<Tab label="Item Four" {...a11yProps(3)} />
-							<Tab label="Item Five" {...a11yProps(4)} />
-							<Tab label="Item Six" {...a11yProps(5)} />
-							<Tab label="Item Seven" {...a11yProps(6)} />
-						</Tabs>
-						<TabPanel value={value} index={0}>
-							Item One
-						</TabPanel>
-						<TabPanel value={value} index={1}>
-							Item Two
-						</TabPanel>
-						<TabPanel value={value} index={2}>
-							Item Three
-						</TabPanel>
-						<TabPanel value={value} index={3}>
-							Item Four
-						</TabPanel>
-						<TabPanel value={value} index={4}>
-							Item Five
-						</TabPanel>
-						<TabPanel value={value} index={5}>
-							Item Six
-						</TabPanel>
-						<TabPanel value={value} index={6}>
-							Item Seven
-						</TabPanel>
-					</Paper>
+		<div>
+			<Container>
+				<Grid container spacing={3}>
+					<Grid item xs={8}>
+						<Paper className={classes.paper}>
+							<AppBar position="static" color="default">
+								<Tabs
+									value={value}
+									onChange={handleChange}
+									indicatorColor="primary"
+									textColor="primary"
+									variant="scrollable"
+									scrollButtons="auto"
+									aria-label="scrollable auto tabs example">
+									{categories.map((category, index) => (
+										<Tab
+											key={category._id}
+											label={category.name}
+											{...a11yProps(index)}
+										/>
+									))}
+								</Tabs>
+							</AppBar>
+							{categories.map((category, index) => (
+								<TabPanel value={value} index={index}>
+									{category.items.map((product) => (
+										<h5>{product.name}</h5>
+									))}
+								</TabPanel>
+							))}
+						</Paper>
+					</Grid>
+					<Grid item xs={4}>
+						<Paper className={classes.paper}></Paper>
+					</Grid>
 				</Grid>
-				<Grid item xs={4}>
-					<Paper className={classes.paper}>
-						<h2>Cart Component</h2>
-					</Paper>
-				</Grid>
-			</Grid>
-		</Container>
+			</Container>
+		</div>
 	);
 }
