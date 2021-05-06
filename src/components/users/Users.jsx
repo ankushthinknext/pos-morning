@@ -38,6 +38,30 @@ const useStyles = makeStyles((theme) => ({
 		marginTop: "20px",
 		marginBottom: "20px",
 	},
+	input: {
+		backgroundColor: "pink",
+		border: "none",
+		"&:before": {
+			borderBottom: `none`,
+		},
+		"&:hover": {
+			borderBottom: `none`,
+		},
+		"&:after": {
+			borderBottom: "none",
+		},
+	},
+	formControl: {
+		"&:before": {
+			borderBottom: `none`,
+		},
+		"&:after": {
+			borderBottom: "none",
+		},
+		"&:hover": {
+			borderBottom: "none",
+		},
+	},
 }));
 
 export default function Users() {
@@ -123,8 +147,9 @@ export default function Users() {
 							justify="flex-end"
 							item
 							xs={12}>
-							<FormControl>
+							<FormControl className={classes.formControl}>
 								<Input
+									className={classes.input}
 									id="standard-adornment-weight"
 									endAdornment={
 										<InputAdornment position="end">

@@ -18,3 +18,6 @@
 	background-color: #ecf0ef;
 	border: none !important;
 }
+.c-search-box:before {
+	border-bottom: none;
+}
