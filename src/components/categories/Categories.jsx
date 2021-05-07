@@ -10,6 +10,7 @@ import TableRow from "@material-ui/core/TableRow";
 import EditIcon from "@material-ui/icons/Edit";
 import Swal from "sweetalert2";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -80,7 +81,9 @@ export default function Categories() {
 											<TableCell aligh="left">{category.name}</TableCell>
 											<TableCell align="left">{category.updatedAt}</TableCell>
 											<TableCell align="right">
-												<EditIcon />
+												<Link to={`category/${category._id}`}>
+													<EditIcon />
+												</Link>
 												<DeleteIcon
 													onClick={() => handleDelete(category._id)}
 												/>

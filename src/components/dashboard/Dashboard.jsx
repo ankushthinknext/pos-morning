@@ -16,7 +16,7 @@ export default function Dashboard() {
 	const [notification, setNotification] = useState({
 		message: "success",
 		open: false,
-		status: "error",
+		status: "success",
 	});
 	const handleClose = () => {
 		setNotification({ ...notification, ["open"]: false });
@@ -53,7 +53,9 @@ export default function Dashboard() {
 					<User notification={handleNotification} />
 				)}
 				{useLocation().pathname === "/categories" && <Categories />}
-				{useLocation().pathname === "/category" && <Category />}
+				{useLocation().pathname.startsWith("/category/") && (
+					<Category notification={handleNotification} />
+				)}
 			</div>
 		</div>
 	);

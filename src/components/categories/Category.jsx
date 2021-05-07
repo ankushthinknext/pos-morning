@@ -1,9 +1,17 @@
 import { Container, Paper, Grid, TextField, Button } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, useLocation, useHistory } from "react-router";
 
-export default function Category() {
+export default function Category(props) {
+	const id = useLocation().pathname.split("/")[2];
+	const history = useHistory();
+	console.log(id);
+
+	console.log("location", useLocation());
+	console.log("params", useParams());
 	const URL = process.env.REACT_APP_API_BASE_URL;
 	let [formData, setFormData] = useState({});
+	let [formMethod, setFormMethod] = useState("POST");
 
 	const handleFormChange = (e) => {
 		let newFormData = { ...formData };
@@ -13,14 +21,40 @@ export default function Category() {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		fetch(`${URL}category`, {
-			method: "POST",
+		fetch(`${URL}category/${id ? id : ""}`, {
+			method: formMethod,
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(formData),
-		}).then((response) => console.log(response));
+		}).then((response) => {
+			props.notification({
+				status: "success",
+				message: `${
+					formMethod === "POST"
+						? "Successfully created category"
+						: "Successfully updated category"
+				}`,
+				open: true,
+			});
+			history.goBack();
+		});
 	};
+
+	useEffect(() => {
+		async function getCategory(id) {
+			if (!id) return;
+			let response = await fetch(`${URL}category/${id}`);
+			response = await response.json();
+			if (response.status) {
+				setFormData(response.data);
+				setFormMethod("PUT");
+			}
+		}
+		getCategory(id);
+	}, []);
+	console.log(formData);
+	console.log(formMethod);
 
 	return (
 		<div>
@@ -38,6 +72,7 @@ export default function Category() {
 										id="filled-required"
 										label="Category Name"
 										variant="filled"
+										value={formData.name}
 									/>
 								</Grid>
 								<Grid item style={{ textAlign: "right", marginTop: "30px" }}>
