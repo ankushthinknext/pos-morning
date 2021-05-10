@@ -11,6 +11,7 @@ import Alert from "@material-ui/lab/Alert";
 import Transactions from "../transactions/Transactions";
 import Categories from "../categories/Categories";
 import Category from "../categories/Category";
+import Product from "../products/Product";
 
 export default function Dashboard() {
 	const [notification, setNotification] = useState({
@@ -55,6 +56,9 @@ export default function Dashboard() {
 				{useLocation().pathname === "/categories" && <Categories />}
 				{useLocation().pathname.startsWith("/category/") && (
 					<Category notification={handleNotification} />
+				)}
+				{useLocation().pathname.startsWith("/product/") && (
+					<Product notification={handleNotification} />
 				)}
 			</div>
 		</div>

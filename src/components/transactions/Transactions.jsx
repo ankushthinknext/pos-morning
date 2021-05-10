@@ -168,7 +168,7 @@ export default function Transactions() {
 					</Grid>
 					<Grid item xs={4}>
 						<Paper className={classes.paper}>
-							<Cart />
+							<Cart cartItems={cartItems} />
 						</Paper>
 					</Grid>
 				</Grid>

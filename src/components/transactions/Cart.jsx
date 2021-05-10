@@ -1,9 +1,18 @@
 import React from "react";
 
-function Cart() {
+function Cart({ cartItems }) {
 	return (
 		<div>
-			<h3>Cart</h3>
+			<table class="table">
+				<tbody>
+					{cartItems.map((item) => (
+						<tr>
+							<th scope="row">{item.name}</th>
+							<td>{item.price}</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
 		</div>
 	);
 }

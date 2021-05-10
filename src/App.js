@@ -15,6 +15,7 @@ function App() {
 				<ProtectedRoute path="/categories" component={Dashboard} />
 				<ProtectedRoute path="/category/:id?" component={Dashboard} />
 				<ProtectedRoute path="/products" component={Dashboard} />
+				<ProtectedRoute path="/product/:id?" component={Dashboard} />
 				<ProtectedRoute path="/transactions" component={Dashboard} />
 				<Route path="/login" component={Login} />
 			</Switch>
