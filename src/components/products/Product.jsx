@@ -9,7 +9,7 @@ import {
 	Select,
 	TextField,
 } from "@material-ui/core";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -30,26 +30,52 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Product() {
+	const URL = process.env.REACT_APP_API_BASE_URL;
 	const classes = useStyles();
 	const [formData, setFormData] = useState({});
+	const [imgURL, setImgURL] = useState("");
+	const [method, setMethod] = useState("POST");
+	const [categories, setCategories] = useState([]);
 
 	const handleFormChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
-	const toBase64 = (e) => {
-		var file = e.target.files[0];
-		console.log(file);
-		var reader = new FileReader();
-		reader.onloadend = function () {
-			console.log("RESULT", reader.result);
-		};
-		console.log(reader);
+	const toBase64 = (file) =>
+		new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onloadend = () => resolve(reader.result);
+			reader.onerror = (error) => reject(error);
+		});
+
+	const handleFileChange = async (e) => {
+		let result = await toBase64(e.target.files[0]);
+		setFormData({ ...formData, image: result });
+		setImgURL(result);
 	};
 
-	const handleFileChange = (e) => {
-		console.log("function called");
-		toBase64(e.target);
-		// setFormData({ ...formData, image: fileOutput });
+	useEffect(() => {
+		async function getAllCategories() {
+			let response = await fetch(`${URL}category`);
+			response = await response.json();
+			setCategories(response.data.categories);
+		}
+		getAllCategories();
+	}, []);
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		let form_data = new FormData();
+		Object.keys(formData).map((key) => form_data.append(key, formData[key]));
+		console.log(form_data);
+		try {
+			let response = await fetch(`${URL}product`, {
+				method: method,
+
+				body: form_data,
+			});
+			response = await response.json();
+		} catch (error) {}
 	};
 
 	return (
@@ -57,7 +83,7 @@ export default function Product() {
 			<Container>
 				<h2>Product Form</h2>
 				<Paper className={classes.paper}>
-					<form onChange={handleFormChange}>
+					<form onChange={handleFormChange} onSubmit={handleSubmit}>
 						<Grid container spacing={3}>
 							<Grid item xs={6}>
 								<TextField
@@ -103,24 +129,33 @@ export default function Product() {
 										native
 										name="category"
 										inputProps={{
-											name: "Categories",
+											name: "category",
 											id: "filled-age-native-simple",
 										}}>
-										<option aria-label="None" value="" />
-										<option value={10}>Ten</option>
-										<option value={20}>Twenty</option>
-										<option value={30}>Thirty</option>
+										<option value="6072bb3903ac77a066c8383b" selected>
+											Crockery
+										</option>
+										{categories.map((category) => (
+											<option key={category._id} value={category._id}>
+												{category.name}
+											</option>
+										))}
 									</Select>
 								</FormControl>
 							</Grid>
 							<Grid item xs="12" align="left">
+								<img
+									style={{ display: "block", marginBottom: "30px" }}
+									src={imgURL}
+									alt=""
+								/>
 								<input
 									accept="image/*"
 									className={classes.fileInput}
 									id="contained-button-file"
 									multiple
 									type="file"
-									onChange={toBase64}
+									onChange={handleFileChange}
 								/>
 								<label htmlFor="contained-button-file">
 									<Button
@@ -135,9 +170,9 @@ export default function Product() {
 							<Grid item xs={12} align="right">
 								<Button
 									className="c-button c-button-lg"
+									type="submit"
 									variant="contained"
-									color="primary"
-									component="span">
+									color="primary">
 									SUBMIT
 								</Button>
 							</Grid>
