@@ -16,6 +16,11 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
 const URL = process.env.REACT_APP_API_BASE_URL;
 const useStyles = makeStyles((theme) => ({
@@ -27,8 +32,10 @@ const useStyles = makeStyles((theme) => ({
 		textAlign: "center",
 		color: theme.palette.text.secondary,
 	},
-	cart: {
-		maxWidth: 345,
+	card: {
+		width: "20%",
+		display: "inline-block",
+		marginLeft: "20px",
 	},
 	media: {
 		height: 140,
@@ -74,18 +81,44 @@ export default function Transactions() {
 	const [products, setProducts] = useState([]);
 	const [cartItems, setCartItems] = useState([]);
 
-	console.log(categories);
-	console.log(products);
+	const [open, setOpen] = React.useState(true);
+
+	const handleClickOpen = () => {
+		setOpen(true);
+	};
+
+	const handleClose = () => {
+		setOpen(false);
+	};
 
 	const handleChange = (event, newValue) => {
 		setValue(newValue);
 	};
 
 	const cartUpdate = (id) => {
-		let selectedItem = products.find((p) => p._id === id);
-		setCartItems([...cartItems, selectedItem]);
+		let cartItemsCopy = [...cartItems];
+		let cartItemIndex = cartItemsCopy.findIndex((c) => c._id === id);
+		if (cartItemIndex === -1) {
+			let selectedItem = products.find((p) => p._id === id);
+			selectedItem.qty = 1;
+			setCartItems([...cartItems, selectedItem]);
+		} else {
+			cartItemsCopy.splice(cartItemIndex, 1);
+			setCartItems(cartItemsCopy);
+		}
 	};
-	console.log(cartItems);
+
+	const cartCounter = (id, action) => {
+		let cartItemsCopy = [...cartItems];
+		let cartItemIndex = cartItemsCopy.findIndex((c) => c._id === id);
+
+		if (action === "increment") cartItemsCopy[cartItemIndex].qty++;
+		else if (action === "decrement") cartItemsCopy[cartItemIndex].qty--;
+		if (cartItemsCopy[cartItemIndex].qty === 0)
+			cartItemsCopy.splice(cartItemIndex, 1);
+
+		setCartItems(cartItemsCopy);
+	};
 
 	useEffect(() => {
 		async function getAllCategories() {
@@ -152,14 +185,6 @@ export default function Transactions() {
 													</Typography>
 												</CardContent>
 											</CardActionArea>
-											<CardActions>
-												<Button size="small" color="primary">
-													Share
-												</Button>
-												<Button size="small" color="primary">
-													Learn More
-												</Button>
-											</CardActions>
 										</Card>
 									))}
 								</TabPanel>
@@ -168,10 +193,34 @@ export default function Transactions() {
 					</Grid>
 					<Grid item xs={4}>
 						<Paper className={classes.paper}>
-							<Cart cartItems={cartItems} />
+							<Cart cartItems={cartItems} handleCartCounter={cartCounter} />
 						</Paper>
 					</Grid>
 				</Grid>
+				<Dialog
+					open={open}
+					onClose={handleClose}
+					aria-labelledby="alert-dialog-title"
+					aria-describedby="alert-dialog-description">
+					<DialogTitle id="alert-dialog-title">
+						{"Use Google's location service?"}
+					</DialogTitle>
+					<DialogContent>
+						<DialogContentText id="alert-dialog-description">
+							Let Google help apps determine location. This means sending
+							anonymous location data to Google, even when no apps are running.
+						</DialogContentText>
+					</DialogContent>
+					<DialogActions>
+						<Button
+							className="c-button c-button-lg c-button-rounded"
+							onClick={handleClose}
+							size="large"
+							color="primary">
+							Disagree
+						</Button>
+					</DialogActions>
+				</Dialog>
 			</Container>
 		</div>
 	);
