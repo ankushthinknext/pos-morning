@@ -16,11 +16,8 @@ import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
+
+import Receipt from "./Receipt";
 
 const URL = process.env.REACT_APP_API_BASE_URL;
 const useStyles = makeStyles((theme) => ({
@@ -80,14 +77,18 @@ export default function Transactions() {
 	const [categories, setCategories] = useState([]);
 	const [products, setProducts] = useState([]);
 	const [cartItems, setCartItems] = useState([]);
+	const [settings, setSettings] = useState({});
+	const [receiptData, setRecieptData] = useState("");
+	console.log(receiptData);
 
-	const [open, setOpen] = React.useState(true);
+	const [open, setOpen] = React.useState(false);
 
 	const handleClickOpen = () => {
 		setOpen(true);
 	};
 
 	const handleClose = () => {
+		console.log("function working");
 		setOpen(false);
 	};
 
@@ -119,7 +120,36 @@ export default function Transactions() {
 
 		setCartItems(cartItemsCopy);
 	};
+	const submitTransaction = () => {
+		console.log("submit tranactions");
+		let subTotal = cartItems.reduce(
+			(total, item) => total + item.qty * item.price,
+			0,
+		);
 
+		let discount = (parseInt(settings.discount) / 100) * subTotal;
+		let tax = (parseFloat(settings.tax) / 100) * subTotal;
+		let grandTotal = tax - discount;
+		let transactionsData = {
+			items: [...cartItems],
+			discount,
+			grandtotal: grandTotal,
+			subtotal: subTotal,
+		};
+		console.log(transactionsData);
+		fetch(`${URL}transaction`, {
+			method: "POST",
+			headers: {
+				"Content-type": "application/json",
+			},
+			body: JSON.stringify(transactionsData),
+		})
+			.then((result) => result.json())
+			.then((result) => setRecieptData(result.data));
+		setOpen(true);
+	};
+
+	console.log("Reciept", receiptData);
 	useEffect(() => {
 		async function getAllCategories() {
 			let response = await fetch(`${URL}product/transaction`);
@@ -131,9 +161,17 @@ export default function Transactions() {
 			response = await response.json();
 			setProducts(response.data.products);
 		}
+		async function getSettings() {
+			let response = await fetch(`${URL}setting`);
+			response = await response.json();
+			setSettings(response.data);
+		}
+
 		getAllCategories();
 		getAllProducts();
+		getSettings();
 	}, []);
+
 	return (
 		<div>
 			<Container>
@@ -193,34 +231,20 @@ export default function Transactions() {
 					</Grid>
 					<Grid item xs={4}>
 						<Paper className={classes.paper}>
-							<Cart cartItems={cartItems} handleCartCounter={cartCounter} />
+							<Cart
+								cartItems={cartItems}
+								storeSettings={settings}
+								handleCartCounter={cartCounter}
+								handleTransaction={submitTransaction}
+							/>
 						</Paper>
 					</Grid>
 				</Grid>
-				<Dialog
-					open={open}
-					onClose={handleClose}
-					aria-labelledby="alert-dialog-title"
-					aria-describedby="alert-dialog-description">
-					<DialogTitle id="alert-dialog-title">
-						{"Use Google's location service?"}
-					</DialogTitle>
-					<DialogContent>
-						<DialogContentText id="alert-dialog-description">
-							Let Google help apps determine location. This means sending
-							anonymous location data to Google, even when no apps are running.
-						</DialogContentText>
-					</DialogContent>
-					<DialogActions>
-						<Button
-							className="c-button c-button-lg c-button-rounded"
-							onClick={handleClose}
-							size="large"
-							color="primary">
-							Disagree
-						</Button>
-					</DialogActions>
-				</Dialog>
+				<Receipt
+					handleOpen={open}
+					handleClose={handleClose}
+					receiptData={receiptData}
+				/>
 			</Container>
 		</div>
 	);

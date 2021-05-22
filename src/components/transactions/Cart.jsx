@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
+import { Button } from "@material-ui/core";
 
-function Cart({ cartItems, handleCartCounter }) {
+function Cart({
+	cartItems,
+	handleCartCounter,
+	storeSettings,
+	handleTransaction,
+}) {
 	const URL = process.env.REACT_APP_API_BASE_URL;
-	const [settings, setSettings] = useState([]);
-	useEffect(() => {
-		fetch(`${URL}setting`)
-			.then((result) => result.json())
-			.then((result) => setSettings(result.data));
-	}, []);
-	console.log("settings", settings);
+
 	return (
 		<div>
+			<h3>Cart</h3>
 			<table class="table">
 				<tbody>
 					{cartItems.map((item) => (
@@ -37,6 +38,9 @@ function Cart({ cartItems, handleCartCounter }) {
 			{cartItems.length === 0
 				? 0
 				: cartItems.reduce((total, item) => total + item.qty * item.price, 0)}
+			<Button onClick={handleTransaction} variant="contained">
+				Pay
+			</Button>
 		</div>
 	);
 }
